@@ -34,3 +34,14 @@ def call_llm(messages: list) -> str:
             chunks.append(content)
 
     return ''.join(chunks)
+
+def stream_llm(messages: list):
+    stream = client.chat.completions.create(
+        model=MODEL,
+        messages=messages,
+        stream=True,
+        extra_body={'chat_template_kwargs': {'enable_thinking': False}}
+    )
+    for chunk in stream:
+        if chunk.choices and chunk.choices[0].delta.content:
+            yield chunk.choices[0].delta.content
